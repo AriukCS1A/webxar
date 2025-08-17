@@ -1,40 +1,77 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | webxar</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=960 height=600 tabindex="-1" style="width: 960px; height: 600px; background: #231F20"></canvas>
-    <script src="Build/build.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Unity WebGL</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+    #unity-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: transparent !important;
+    }
+    #video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1; /* Unity canvas дээр гарахын тулд */
+    }
+  </style>
+</head>
+<body>
+  <!-- Камерын видео -->
+  <video id="video-bg" autoplay playsinline muted></video>
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
+  <!-- Unity canvas -->
+  <div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+  </div>
 
-        document.body.style.textAlign = "left";
-      }
-
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/build.data",
-        frameworkUrl: "Build/build.framework.js",
-        codeUrl: "Build/build.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "webxar",
-        productVersion: "0.1",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+  <script>
+    // Камерын background асаах
+    const video = document.getElementById("video-bg");
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
       });
-    </script>
-  </body>
+  </script>
+
+  <!-- Unity loader script -->
+  <script src="Build/build.loader.js"></script>
+  <script>
+    createUnityInstance(document.querySelector("#unity-canvas"), {
+      dataUrl: "Build/build.data",
+      frameworkUrl: "Build/build.framework.js",
+      codeUrl: "Build/build.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "webxar",
+      productVersion: "1.0",
+    }).then(unityInstance => {
+      console.log("Unity loaded", unityInstance);
+    }).catch(err => {
+      console.error(err);
+    });
+  </script>
+</body>
 </html>

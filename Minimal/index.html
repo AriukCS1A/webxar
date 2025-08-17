@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | webxar</title>
+
+    <!-- TRANSPARENT BACKGROUND -->
+    <style>
+      html, body { height:100%; margin:0; padding:0; background: transparent; }
+      #unity-canvas { background-color: transparent !important; }
+    </style>
+  </head>
+
+  <body style="text-align:center; padding:0; border:0; margin:0; background: transparent;">
+    <!-- Canvas-ийн CSS background-ийг template-ийн өнгөнөөс биш, үргэлж ил тод байлга -->
+    <canvas
+      id="unity-canvas"
+      width=960
+      height=600
+      tabindex="-1"
+      style="width: 960px; height: 600px; background: transparent;">
+    </canvas>
+
+    <script src="Build/build.loader.js"></script>
+    <script>
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile: бүх дэлгэцийг дүүргэнэ
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+
+        var canvas = document.querySelector("#unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
+        canvas.style.left = "0";
+        canvas.style.top = "0";
+
+        document.body.style.textAlign = "left";
+      }
+
+      const canvas = document.querySelector("#unity-canvas");
+
+      createUnityInstance(canvas, {
+        dataUrl: "Build/build.data",
+        frameworkUrl: "Build/build.framework.js",
+        codeUrl: "Build/build.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "webxar",
+        productVersion: "0.1",
+
+        // 🔑 Ил тод WebGL context
+        webglContextAttributes: { alpha: true, premultipliedAlpha: false }
+
+        // matchWebGLToCanvasSize: false,
+        // devicePixelRatio: 1,
+      });
+    </script>
+  </body>
+</html>
